@@ -179,7 +179,7 @@ class HandFingerSelector extends StatelessWidget {
     final scaleY = displayHeight / HandViewBox.height;
 
     final handImage = Opacity(
-      opacity: 0.55,
+      opacity: 0.9,
       child: ColorFiltered(
         colorFilter: _invertMatrix,
         child: Image.asset(

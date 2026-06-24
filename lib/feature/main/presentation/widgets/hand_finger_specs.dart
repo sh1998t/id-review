@@ -46,43 +46,43 @@ class FingerTipSpec {
 class HandFingerAssets {
   static const finger01 = FingerAssetMeta(
     path: 'assets/finger/finger_01.png',
-    width: 140,
-    height: 220,
+    width: 111,
+    height: 218,
   );
   static const finger02 = FingerAssetMeta(
     path: 'assets/finger/finger_02.png',
-    width: 140,
-    height: 220,
+    width: 115,
+    height: 210,
   );
   static const finger03 = FingerAssetMeta(
     path: 'assets/finger/finger_03.png',
-    width: 140,
-    height: 220,
+    width: 120,
+    height: 230,
   );
   static const finger04 = FingerAssetMeta(
-    path: 'assets/finger/finger_04.png',
-    width: 140,
-    height: 220,
+    path: 'assets/finger/finger_05.png',
+    width: 111,
+    height: 218,
   );
   static const finger05 = FingerAssetMeta(
-    path: 'assets/finger/finger_05.png',
-    width: 140,
-    height: 220,
+    path: 'assets/finger/finger_04.png',
+    width: 223,
+    height: 210,
   );
   static const finger06 = FingerAssetMeta(
     path: 'assets/finger/finger_06.png',
-    width: 140,
-    height: 220,
+    width: 223,
+    height: 210,
   );
   static const finger07 = FingerAssetMeta(
     path: 'assets/finger/finger_07.png',
-    width: 140,
-    height: 220,
+    width: 120,
+    height: 230,
   );
   static const finger08 = FingerAssetMeta(
     path: 'assets/finger/finger_08.png',
-    width: 140,
-    height: 220,
+    width: 115,
+    height: 210,
   );
   static const finger09 = FingerAssetMeta(
     path: 'assets/finger/finger_09.png',
@@ -128,23 +128,23 @@ class HandFingerSpecs {
     ),
     FingerTipSpec(
       finger: 4,
-      cx: 390,
-      cy: 255,
-      rx: 28,
-      ry: 23,
-      offsetY: 14,
-      offsetX: 10,
-      rotate: -32,
-      asset: HandFingerAssets.finger04,
-    ),
-    FingerTipSpec(
-      finger: 5,
       cx: 256,
       cy: 55,
       rx: 22,
       ry: 28,
       offsetY: 20,
       offsetX: -2,
+      asset: HandFingerAssets.finger04,
+    ),
+    FingerTipSpec(
+      finger: 5,
+      cx: 390,
+      cy: 255,
+      rx: 28,
+      ry: 23,
+      offsetY: 14,
+      offsetX: 8,
+      rotate: -32,
       asset: HandFingerAssets.finger05,
     ),
   ];
@@ -157,7 +157,7 @@ class HandFingerSpecs {
       rx: 30,
       ry: 23,
       offsetY: 14,
-      offsetX: -10,
+      offsetX: -8,
       rotate: 36,
       asset: HandFingerAssets.finger06,
     ),
@@ -187,6 +187,7 @@ class HandFingerSpecs {
       ry: 28,
       offsetY: 20,
       offsetX: 2,
+      scale: 1.55,
       asset: HandFingerAssets.finger09,
     ),
     FingerTipSpec(

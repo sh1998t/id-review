@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fap60_notification_channel_name">FAP60 Server</string>
+    <string name="fap60_notification_title">FAP60 Server Running</string>
+    <string name="fap60_notification_text">Listening on port 7777</string>
+</resources>

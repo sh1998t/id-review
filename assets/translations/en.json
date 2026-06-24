@@ -49,7 +49,11 @@
       "thumbs": "Thumb fingerprints",
       "special_cases": "For special cases",
       "special_case": "Physically unable to provide fingerprints",
-      "special_case_count": "Physically unable to provide fingerprints ({} selected)"
+      "special_case_count": "Physically unable to provide fingerprints ({} selected)",
+      "capture": "Capture",
+      "waiting": "Place fingers on the scanner...",
+      "scanner_not_connected": "FAP60 scanner not connected",
+      "scanner_error": "Could not connect to FAP60 scanner"
     },
     "signature": {
       "title": "Sign here",
