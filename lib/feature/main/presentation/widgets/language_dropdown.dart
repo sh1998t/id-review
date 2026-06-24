@@ -1,19 +1,20 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/locale/app_language.dart';
-import '../../../../core/locale/locale_provider.dart';
 
 class LanguageDropdown extends StatelessWidget {
   const LanguageDropdown({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final localeProvider = LocaleProvider.of(context);
-    final selected = localeProvider.language;
+    final selected = AppLanguage.fromLocale(context.locale);
 
     return PopupMenuButton<AppLanguage>(
-      onSelected: localeProvider.onLanguageChanged,
+      onSelected: (language) {
+        context.setLocale(language.locale);
+      },
       offset: Offset(0, 42.h),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
@@ -114,10 +115,6 @@ class _LanguageFlag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (language == AppLanguage.ru) {
-      return _RussianFlag(width: width, height: height);
-    }
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(4.r),
       child: Image.asset(
@@ -125,34 +122,6 @@ class _LanguageFlag extends StatelessWidget {
         width: width,
         height: height,
         fit: BoxFit.cover,
-      ),
-    );
-  }
-}
-
-class _RussianFlag extends StatelessWidget {
-  final double width;
-  final double height;
-
-  const _RussianFlag({
-    required this.width,
-    required this.height,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4.r),
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: const Column(
-          children: [
-            Expanded(child: ColoredBox(color: Colors.white)),
-            Expanded(child: ColoredBox(color: Color(0xFF0039A6))),
-            Expanded(child: ColoredBox(color: Color(0xFFD52B1E))),
-          ],
-        ),
       ),
     );
   }

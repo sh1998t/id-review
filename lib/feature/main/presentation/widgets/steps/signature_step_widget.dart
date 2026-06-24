@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:signature/signature.dart';
@@ -37,7 +38,7 @@ class _SignatureStepWidgetState extends State<SignatureStepWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Imzoni qo\'ying',
+              'main.signature.title'.tr(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -47,7 +48,7 @@ class _SignatureStepWidgetState extends State<SignatureStepWidget> {
             TextButton(
               onPressed: _controller.clear,
               child: Text(
-                'Tozalash',
+                'main.signature.clear'.tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 13.sp,

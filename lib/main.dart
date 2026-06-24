@@ -1,63 +1,51 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'core/locale/app_language.dart';
-import 'core/locale/locale_provider.dart';
 import 'feature/auth/presentation/page/auth_page.dart';
-import 'feature/services/presentation/page/services_page.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('uz'),
+        Locale('ru'),
+        Locale('en'),
+      ],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('uz'),
+      startLocale: const Locale('uz'),
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  AppLanguage _language = AppLanguage.uz;
-
-  void _setLanguage(AppLanguage language) {
-    setState(() => _language = language);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(471, 753),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (_, child) {
-        return LocaleProvider(
-          language: _language,
-          onLanguageChanged: _setLanguage,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'ID Renew',
-            locale: _language.frameworkLocale,
-            supportedLocales: const [
-              Locale('en'),
-              Locale('ru'),
-            ],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.deepPurple,
-              ),
-            ),
-            home: child,
-          ),
-        );
-      },
-      child: const AuthPage(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'ID Renew',
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+        ),
+      ),
+      home: ScreenUtilInit(
+        designSize: const Size(471, 753),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) => child ?? const SizedBox.shrink(),
+        child: const AuthPage(),
+      ),
     );
   }
 }

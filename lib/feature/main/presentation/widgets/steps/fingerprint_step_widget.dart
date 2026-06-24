@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -28,18 +29,18 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _FingerGroup(
-          title: 'Chap qo\'l barmoq izlari',
+        _FingerGroup(
+          title: 'main.fingerprint.left_hand'.tr(),
           fingerCount: 4,
         ),
         SizedBox(height: 16.h),
-        const _FingerGroup(
-          title: 'O\'ng qo\'l barmoq izlari',
+        _FingerGroup(
+          title: 'main.fingerprint.right_hand'.tr(),
           fingerCount: 4,
         ),
         SizedBox(height: 16.h),
-        const _FingerGroup(
-          title: 'Bosh barmoqlar izlari',
+        _FingerGroup(
+          title: 'main.fingerprint.thumbs'.tr(),
           fingerCount: 2,
         ),
         SizedBox(height: 16.h),
@@ -118,11 +119,16 @@ class _SpecialCaseGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label = selectedCount > 0
+        ? 'main.fingerprint.special_case_count'
+            .tr(args: ['$selectedCount'])
+        : 'main.fingerprint.special_case'.tr();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Maxsus holatlar uchun',
+          'main.fingerprint.special_cases'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -165,9 +171,7 @@ class _SpecialCaseGroup extends StatelessWidget {
                   SizedBox(width: 12.w),
                   Expanded(
                     child: Text(
-                      selectedCount > 0
-                          ? 'Barmoq izi topshirish jismoniy imkonsiz holatda ($selectedCount ta)'
-                          : 'Barmoq izi topshirish jismoniy imkonsiz holatda',
+                      label,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 11.sp,

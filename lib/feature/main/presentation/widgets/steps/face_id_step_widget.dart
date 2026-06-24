@@ -1,6 +1,9 @@
 import 'package:camera/camera.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+enum _CameraError { notFound, openFailed }
 
 class FaceIdStepWidget extends StatefulWidget {
   const FaceIdStepWidget({super.key});
@@ -12,7 +15,7 @@ class FaceIdStepWidget extends StatefulWidget {
 class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
   CameraController? _controller;
   bool _isInitialized = false;
-  String? _errorMessage;
+  _CameraError? _error;
 
   @override
   void initState() {
@@ -24,7 +27,7 @@ class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
     try {
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
-        setState(() => _errorMessage = 'Kamera topilmadi');
+        setState(() => _error = _CameraError.notFound);
         return;
       }
 
@@ -52,7 +55,7 @@ class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _errorMessage = 'Kamerani ochib bo\'lmadi');
+      setState(() => _error = _CameraError.openFailed);
     }
   }
 
@@ -60,6 +63,14 @@ class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
   void dispose() {
     _controller?.dispose();
     super.dispose();
+  }
+
+  String? get _errorMessage {
+    return switch (_error) {
+      _CameraError.notFound => 'main.face_id.camera_not_found'.tr(),
+      _CameraError.openFailed => 'main.face_id.camera_error'.tr(),
+      null => null,
+    };
   }
 
   @override
@@ -77,10 +88,11 @@ class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
   }
 
   Widget _buildCameraArea() {
-    if (_errorMessage != null) {
+    final errorMessage = _errorMessage;
+    if (errorMessage != null) {
       return _buildPlaceholder(
         icon: Icons.videocam_off_outlined,
-        text: _errorMessage!,
+        text: errorMessage,
       );
     }
 

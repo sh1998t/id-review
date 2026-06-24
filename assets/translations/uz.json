@@ -1,0 +1,76 @@
+{
+  "auth": {
+    "greeting": "Assalomu Aleykum",
+    "login": "Login",
+    "login_hint": "Login",
+    "password": "Parol",
+    "password_hint": "Parol",
+    "sign_in": "Kirish",
+    "login_required": "Loginni kiriting",
+    "login_min_length": "Login kamida 3 ta belgidan iborat bo'lishi kerak",
+    "password_required": "Parolni kiriting",
+    "password_min_length": "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
+  },
+  "main": {
+    "org_title": "Migratsiya va fuqarolikni rasmiylashtirish boshqarmasi",
+    "steps": {
+      "applicant_title": "Arizachi",
+      "applicant_subtitle": "Ma'lumot kiritish",
+      "face_id_title": "Face ID",
+      "face_id_subtitle": "Rasmga tushish",
+      "fingerprint_title": "Barmoq izi",
+      "fingerprint_subtitle": "Ma'lumot kiritish",
+      "signature_title": "Imzoni qo'yish",
+      "signature_subtitle": "Ma'lumot kiritish",
+      "review_title": "Nazorat tekshiruvi",
+      "review_subtitle": "Tekshirish"
+    },
+    "applicant": {
+      "first_name": "Ism",
+      "first_name_hint": "Fayozjon",
+      "last_name": "Familiya",
+      "last_name_hint": "Familiya",
+      "middle_name": "Otasini ismi",
+      "middle_name_hint": "Otasini ismi",
+      "pinfl": "JShShIR",
+      "pinfl_hint": "JShShIR",
+      "passport": "Seriya va raqami",
+      "passport_hint": "Seriya va raqami",
+      "birth_date": "Tug'ilgan sanasi",
+      "birth_date_hint": "Tug'ilgan sanasi"
+    },
+    "face_id": {
+      "camera_not_found": "Kamera topilmadi",
+      "camera_error": "Kamerani ochib bo'lmadi"
+    },
+    "fingerprint": {
+      "left_hand": "Chap qo'l barmoq izlari",
+      "right_hand": "O'ng qo'l barmoq izlari",
+      "thumbs": "Bosh barmoqlar izlari",
+      "special_cases": "Maxsus holatlar uchun",
+      "special_case": "Barmoq izi topshirish jismoniy imkonsiz holatda",
+      "special_case_count": "Barmoq izi topshirish jismoniy imkonsiz holatda ({} ta)"
+    },
+    "signature": {
+      "title": "Imzoni qo'ying",
+      "clear": "Tozalash"
+    },
+    "review": {
+      "phone_title": "Aloqa uchun telefon raqam kiriting",
+      "phone_hint": "+998 00 000 00 00",
+      "id_card_copy": "ID kartaning elektron nusxasi",
+      "id_card_image": "ID karta rasmi"
+    },
+    "disabled_fingers": {
+      "title": "Barmoq izi olish imkonsiz bo'lgan barmoqlaringizni belgilang",
+      "back": "Orqaga",
+      "save": "Saqlash"
+    }
+  },
+  "services": {
+    "title": "Xizmatlar",
+    "biometric_passport": "Biometrik passportni ID kartaga almashtirish",
+    "id_renewal": "ID kartani almashtirish (Muddatini yangilash)",
+    "non_citizen_replacement": "Fuqaroligi bo'lmagan shaxslar uchun ID karta almashtirish"
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,14 +17,14 @@ class ReviewStepWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         MainTextField(
-          title: 'Aloqa uchun telefon raqam kiriting',
-          hintText: '+998 00 000 00 00',
+          title: 'main.review.phone_title'.tr(),
+          hintText: 'main.review.phone_hint'.tr(),
           keyboardType: TextInputType.phone,
           inputFormatters: [AppInputMasks.phone],
         ),
         SizedBox(height: 20.h),
         Text(
-          'ID kartaning elektron nusxasi',
+          'main.review.id_card_copy'.tr(),
           style: TextStyle(
             color: Colors.white,
             fontSize: 13.sp,
@@ -64,7 +65,7 @@ class _IdCardImage extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Text(
-              'ID karta rasmi',
+              'main.review.id_card_image'.tr(),
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 14.sp,

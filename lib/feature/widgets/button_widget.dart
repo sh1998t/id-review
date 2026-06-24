@@ -20,7 +20,6 @@ class ButtonWidget extends StatelessWidget {
   final Widget? leadingSvg;
   final Widget? trailingSvg;
 
-  /// ✅ Yangi qo‘shilgan parametr:
   final Color? borderColor;
 
   const ButtonWidget({
@@ -41,7 +40,7 @@ class ButtonWidget extends StatelessWidget {
     this.borderRadius,
     this.leadingSvg,
     this.trailingSvg,
-    this.borderColor, // ✅
+    this.borderColor,
   });
 
   @override
@@ -67,7 +66,7 @@ class ButtonWidget extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: radius,
               side: BorderSide(
-                color: borderColor ?? Colors.transparent, // ✅ yangi chiziq
+                color: borderColor ?? Colors.transparent,
                 width: 1.5,
               ),
             ),

@@ -1,0 +1,76 @@
+{
+  "auth": {
+    "greeting": "Ассалому алейкум",
+    "login": "Логин",
+    "login_hint": "Логин",
+    "password": "Пароль",
+    "password_hint": "Пароль",
+    "sign_in": "Войти",
+    "login_required": "Введите логин",
+    "login_min_length": "Логин должен содержать минимум 3 символа",
+    "password_required": "Введите пароль",
+    "password_min_length": "Пароль должен содержать минимум 6 символов"
+  },
+  "main": {
+    "org_title": "Управление по делам миграции и оформления гражданства",
+    "steps": {
+      "applicant_title": "Заявитель",
+      "applicant_subtitle": "Ввод данных",
+      "face_id_title": "Face ID",
+      "face_id_subtitle": "Фотографирование",
+      "fingerprint_title": "Отпечаток пальца",
+      "fingerprint_subtitle": "Ввод данных",
+      "signature_title": "Поставить подпись",
+      "signature_subtitle": "Ввод данных",
+      "review_title": "Контрольная проверка",
+      "review_subtitle": "Проверка"
+    },
+    "applicant": {
+      "first_name": "Имя",
+      "first_name_hint": "Файозжон",
+      "last_name": "Фамилия",
+      "last_name_hint": "Фамилия",
+      "middle_name": "Отчество",
+      "middle_name_hint": "Отчество",
+      "pinfl": "ПИНФЛ",
+      "pinfl_hint": "ПИНФЛ",
+      "passport": "Серия и номер",
+      "passport_hint": "Серия и номер",
+      "birth_date": "Дата рождения",
+      "birth_date_hint": "Дата рождения"
+    },
+    "face_id": {
+      "camera_not_found": "Камера не найдена",
+      "camera_error": "Не удалось открыть камеру"
+    },
+    "fingerprint": {
+      "left_hand": "Отпечатки левой руки",
+      "right_hand": "Отпечатки правой руки",
+      "thumbs": "Отпечатки больших пальцев",
+      "special_cases": "Для особых случаев",
+      "special_case": "Физически невозможно сдать отпечатки пальцев",
+      "special_case_count": "Физически невозможно сдать отпечатки пальцев ({} шт.)"
+    },
+    "signature": {
+      "title": "Поставьте подпись",
+      "clear": "Очистить"
+    },
+    "review": {
+      "phone_title": "Введите контактный номер телефона",
+      "phone_hint": "+998 00 000 00 00",
+      "id_card_copy": "Электронная копия ID-карты",
+      "id_card_image": "Изображение ID-карты"
+    },
+    "disabled_fingers": {
+      "title": "Отметьте пальцы, с которых невозможно снять отпечаток",
+      "back": "Назад",
+      "save": "Сохранить"
+    }
+  },
+  "services": {
+    "title": "Услуги",
+    "biometric_passport": "Замена биометрического паспорта на ID-карту",
+    "id_renewal": "Замена ID-карты (продление срока)",
+    "non_citizen_replacement": "Замена ID-карты для лиц без гражданства"
+  }
+}

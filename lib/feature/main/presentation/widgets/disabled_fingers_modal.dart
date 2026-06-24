@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -67,7 +68,7 @@ class _DisabledFingersModalState extends State<DisabledFingersModal> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Barmoq izi olish imkonsiz bo\'lgan barmoqlaringizni belgilang',
+              'main.disabled_fingers.title'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black87,
@@ -108,7 +109,7 @@ class _DisabledFingersModalState extends State<DisabledFingersModal> {
                       ),
                     ),
                     child: Text(
-                      'Orqaga',
+                      'main.disabled_fingers.back'.tr(),
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
@@ -131,7 +132,7 @@ class _DisabledFingersModalState extends State<DisabledFingersModal> {
                       ),
                     ),
                     child: Text(
-                      'Saqlash',
+                      'main.disabled_fingers.save'.tr(),
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
@@ -185,7 +186,7 @@ class HandFingerSelector extends StatelessWidget {
           _handAsset,
           width: displayWidth,
           height: displayHeight,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
         ),
       ),
     );
@@ -236,7 +237,7 @@ class _FingerTipOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tipColor = isSelected ? _selected : _green;
-    final height = tip.ry * 2 * scaleY * _fingerSizeScale;
+    final height = tip.ry * 2 * scaleY * _fingerSizeScale * tip.scale;
     final width = height * tip.asset.aspectRatio;
     final anchorX = (tip.cx + tip.offsetX) * scaleX;
     final anchorY = (tip.cy + tip.ry + tip.offsetY) * scaleY;

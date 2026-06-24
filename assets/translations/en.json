@@ -1,0 +1,76 @@
+{
+  "auth": {
+    "greeting": "Assalamu Alaykum",
+    "login": "Login",
+    "login_hint": "Login",
+    "password": "Password",
+    "password_hint": "Password",
+    "sign_in": "Sign in",
+    "login_required": "Please enter login",
+    "login_min_length": "Login must be at least 3 characters",
+    "password_required": "Please enter password",
+    "password_min_length": "Password must be at least 6 characters"
+  },
+  "main": {
+    "org_title": "Department of Migration and Citizenship Registration",
+    "steps": {
+      "applicant_title": "Applicant",
+      "applicant_subtitle": "Enter information",
+      "face_id_title": "Face ID",
+      "face_id_subtitle": "Take a photo",
+      "fingerprint_title": "Fingerprint",
+      "fingerprint_subtitle": "Enter information",
+      "signature_title": "Sign",
+      "signature_subtitle": "Enter information",
+      "review_title": "Review",
+      "review_subtitle": "Verification"
+    },
+    "applicant": {
+      "first_name": "First name",
+      "first_name_hint": "Fayozjon",
+      "last_name": "Last name",
+      "last_name_hint": "Last name",
+      "middle_name": "Patronymic",
+      "middle_name_hint": "Patronymic",
+      "pinfl": "PINFL",
+      "pinfl_hint": "PINFL",
+      "passport": "Series and number",
+      "passport_hint": "Series and number",
+      "birth_date": "Date of birth",
+      "birth_date_hint": "Date of birth"
+    },
+    "face_id": {
+      "camera_not_found": "Camera not found",
+      "camera_error": "Could not open camera"
+    },
+    "fingerprint": {
+      "left_hand": "Left hand fingerprints",
+      "right_hand": "Right hand fingerprints",
+      "thumbs": "Thumb fingerprints",
+      "special_cases": "For special cases",
+      "special_case": "Physically unable to provide fingerprints",
+      "special_case_count": "Physically unable to provide fingerprints ({} selected)"
+    },
+    "signature": {
+      "title": "Sign here",
+      "clear": "Clear"
+    },
+    "review": {
+      "phone_title": "Enter contact phone number",
+      "phone_hint": "+998 00 000 00 00",
+      "id_card_copy": "Electronic copy of ID card",
+      "id_card_image": "ID card image"
+    },
+    "disabled_fingers": {
+      "title": "Mark fingers that cannot provide a fingerprint",
+      "back": "Back",
+      "save": "Save"
+    }
+  },
+  "services": {
+    "title": "Services",
+    "biometric_passport": "Replace biometric passport with ID card",
+    "id_renewal": "Replace ID card (renew validity)",
+    "non_citizen_replacement": "ID card replacement for non-citizens"
+  }
+}

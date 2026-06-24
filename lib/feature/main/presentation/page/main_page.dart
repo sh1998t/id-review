@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../widgets/bacround_widget.dart';
@@ -19,33 +20,33 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentStep = 0;
 
-  static const _steps = [
-    StepItem(
-      number: '01',
-      title: 'Arizachi',
-      subtitle: "Ma'lumot kiritish",
-    ),
-    StepItem(
-      number: '02',
-      title: 'Face ID',
-      subtitle: 'Rasmga tushish',
-    ),
-    StepItem(
-      number: '03',
-      title: 'Barmoq izi',
-      subtitle: "Ma'lumot kiritish",
-    ),
-    StepItem(
-      number: '04',
-      title: "Imzoni qo'yish",
-      subtitle: "Ma'lumot kiritish",
-    ),
-    StepItem(
-      number: '05',
-      title: 'Nazorat tekshiruvi',
-      subtitle: 'Tekshirish',
-    ),
-  ];
+  List<StepItem> get _steps => [
+        StepItem(
+          number: '01',
+          title: 'main.steps.applicant_title'.tr(),
+          subtitle: 'main.steps.applicant_subtitle'.tr(),
+        ),
+        StepItem(
+          number: '02',
+          title: 'main.steps.face_id_title'.tr(),
+          subtitle: 'main.steps.face_id_subtitle'.tr(),
+        ),
+        StepItem(
+          number: '03',
+          title: 'main.steps.fingerprint_title'.tr(),
+          subtitle: 'main.steps.fingerprint_subtitle'.tr(),
+        ),
+        StepItem(
+          number: '04',
+          title: 'main.steps.signature_title'.tr(),
+          subtitle: 'main.steps.signature_subtitle'.tr(),
+        ),
+        StepItem(
+          number: '05',
+          title: 'main.steps.review_title'.tr(),
+          subtitle: 'main.steps.review_subtitle'.tr(),
+        ),
+      ];
 
   void _goNext() {
     if (_currentStep >= _steps.length - 1) return;
@@ -82,7 +83,7 @@ class _MainPageState extends State<MainPage> {
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
-                      'Migratsiya va fuqarolikni rasmiylashtirish boshqarmasi',
+                      'main.org_title'.tr(),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
