@@ -31,7 +31,13 @@ class Fap60Client {
 
   Future<bool> isDeviceOpen() async {
     final resp = await _request({'method': 'status'});
-    return resp['status'] == 'ok' && resp['deviceOpen'] == true;
+    if (resp['status'] != 'ok') return false;
+
+    final attached = resp['deviceAttached'] == true;
+    final permitted = resp['devicePermitted'] == true;
+    final open = resp['deviceOpen'] == true;
+
+    return attached && permitted && open;
   }
 
   Future<Fap60CaptureResult> capture({required int imageType}) async {

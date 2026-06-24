@@ -52,8 +52,10 @@
       "special_case_count": "Physically unable to provide fingerprints ({} selected)",
       "capture": "Capture",
       "waiting": "Place fingers on the scanner...",
-      "scanner_not_connected": "FAP60 scanner not connected",
-      "scanner_error": "Could not connect to FAP60 scanner"
+      "scanner_connected": "Fingerprint scanner connected",
+      "scanner_not_connected": "Fingerprint scanner not connected",
+      "scanner_checking": "Checking scanner...",
+      "scanner_error": "Could not connect to scanner"
     },
     "signature": {
       "title": "Sign here",

@@ -21,7 +21,8 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
   final Map<int, _CapturedFinger> _captured = {};
   bool _deviceReady = false;
   bool _checkingDevice = true;
-  String? _statusMessage;
+  bool _scannerError = false;
+  String? _captureMessage;
   int? _capturingGroup;
 
   static const _leftGroup = Fap60FingerMapping.leftFour;
@@ -37,7 +38,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
   Future<void> _checkDevice() async {
     setState(() {
       _checkingDevice = true;
-      _statusMessage = null;
+      _scannerError = false;
     });
     try {
       final open = await _client.isDeviceOpen();
@@ -45,16 +46,14 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
       setState(() {
         _deviceReady = open;
         _checkingDevice = false;
-        if (!open) {
-          _statusMessage = 'main.fingerprint.scanner_not_connected'.tr();
-        }
+        _scannerError = false;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _deviceReady = false;
         _checkingDevice = false;
-        _statusMessage = 'main.fingerprint.scanner_error'.tr();
+        _scannerError = true;
       });
     }
   }
@@ -77,7 +76,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
 
     setState(() {
       _capturingGroup = imageType;
-      _statusMessage = 'main.fingerprint.waiting'.tr();
+      _captureMessage = 'main.fingerprint.waiting'.tr();
     });
 
     try {
@@ -87,7 +86,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
       if (!result.success) {
         setState(() {
           _capturingGroup = null;
-          _statusMessage = result.error;
+          _captureMessage = result.error;
         });
         return;
       }
@@ -108,13 +107,13 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
           _captured[finger] = _CapturedFinger(bytes: bytes, quality: quality);
         }
         _capturingGroup = null;
-        _statusMessage = null;
+        _captureMessage = null;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _capturingGroup = null;
-        _statusMessage = e.toString();
+        _captureMessage = e.toString();
       });
     }
   }
@@ -123,19 +122,17 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if (_checkingDevice)
+        if (_captureMessage != null)
           Padding(
-            padding: EdgeInsets.only(bottom: 12.h),
-            child: const Center(child: CircularProgressIndicator()),
-          )
-        else if (_statusMessage != null)
-          Padding(
-            padding: EdgeInsets.only(bottom: 12.h),
+            padding: EdgeInsets.only(bottom: 8.h),
             child: Text(
-              _statusMessage!,
+              _captureMessage!,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 12.sp),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.white70, fontSize: 11.sp),
             ),
           ),
         _FingerGroup(
@@ -148,7 +145,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
               ? () => _captureGroup(0, _leftGroup)
               : null,
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 10.h),
         _FingerGroup(
           title: 'main.fingerprint.right_hand'.tr(),
           fingerNumbers: _rightGroup,
@@ -159,7 +156,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
               ? () => _captureGroup(1, _rightGroup)
               : null,
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 10.h),
         _FingerGroup(
           title: 'main.fingerprint.thumbs'.tr(),
           fingerNumbers: _thumbGroup,
@@ -170,12 +167,18 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
               ? () => _captureGroup(3, _thumbGroup)
               : null,
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 20.h),
         _SpecialCaseGroup(
           selectedCount: _disabledFingers.length,
           onTap: _openDisabledFingersModal,
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: 10.h),
+        _ScannerStatusIndicator(
+          isChecking: _checkingDevice,
+          isConnected: _deviceReady,
+          hasError: _scannerError,
+          onRefresh: _checkDevice,
+        ),
       ],
     );
   }
@@ -221,55 +224,64 @@ class _FingerGroup extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: 10.h),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (final finger in fingerNumbers)
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (final finger in fingerNumbers)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4.w),
+                      child: _FingerSlot(
+                        fingerNumber: finger,
+                        isDisabled: disabledFingers.contains(finger),
+                        captured: captured[finger],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (!_allDisabled && onCapture != null)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6.w),
-                child: _FingerSlot(
-                  fingerNumber: finger,
-                  isDisabled: disabledFingers.contains(finger),
-                  captured: captured[finger],
+                padding: EdgeInsets.only(left: 6.w, top: 4.h),
+                child: SizedBox(
+                  width: 96.w,
+                  child: ElevatedButton(
+                    onPressed: isCapturing ? null : onCapture,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF28C711),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      minimumSize: Size(96.w, 36.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    child: isCapturing
+                        ? SizedBox(
+                            width: 16.w,
+                            height: 16.w,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            'main.fingerprint.capture'.tr(),
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
                 ),
               ),
           ],
         ),
-        if (!_allDisabled && onCapture != null) ...[
-          SizedBox(height: 10.h),
-          SizedBox(
-            width: 220.w,
-            child: ElevatedButton(
-              onPressed: isCapturing ? null : onCapture,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF28C711),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: EdgeInsets.symmetric(vertical: 10.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-              ),
-              child: isCapturing
-                  ? SizedBox(
-                      width: 18.w,
-                      height: 18.w,
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : Text(
-                      'main.fingerprint.capture'.tr(),
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -372,6 +384,7 @@ class _SpecialCaseGroup extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'main.fingerprint.special_cases'.tr(),
@@ -382,56 +395,150 @@ class _SpecialCaseGroup extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 12.h),
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(10.r),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE85D4C),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 32.w,
-                    height: 32.w,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '?',
-                        style: TextStyle(
-                          color: const Color(0xFFE85D4C),
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w700,
+        SizedBox(height: 10.h),
+        SizedBox(
+          height: 56.h,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(10.r),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE85D4C),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32.w,
+                      height: 32.w,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '?',
+                          style: TextStyle(
+                            color: const Color(0xFFE85D4C),
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w500,
-                        height: 1.3,
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Text(
+                        label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w500,
+                          height: 1.25,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ScannerStatusIndicator extends StatelessWidget {
+  final bool isChecking;
+  final bool isConnected;
+  final bool hasError;
+  final VoidCallback onRefresh;
+
+  const _ScannerStatusIndicator({
+    required this.isChecking,
+    required this.isConnected,
+    required this.hasError,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    late final Color dotColor;
+    late final String label;
+
+    if (isChecking) {
+      dotColor = Colors.white70;
+      label = 'main.fingerprint.scanner_checking'.tr();
+    } else if (hasError) {
+      dotColor = const Color(0xFFFFB74D);
+      label = 'main.fingerprint.scanner_error'.tr();
+    } else if (isConnected) {
+      dotColor = const Color(0xFF28C711);
+      label = 'main.fingerprint.scanner_connected'.tr();
+    } else {
+      dotColor = const Color(0xFFE85D4C);
+      label = 'main.fingerprint.scanner_not_connected'.tr();
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isChecking ? null : onRefresh,
+        borderRadius: BorderRadius.circular(8.r),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(color: Colors.white24),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isChecking)
+                SizedBox(
+                  width: 14.w,
+                  height: 14.w,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white70,
+                  ),
+                )
+              else
+                Container(
+                  width: 10.w,
+                  height: 10.w,
+                  decoration: BoxDecoration(
+                    color: dotColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              SizedBox(width: 8.w),
+              Flexible(
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              if (!isChecking) ...[
+                SizedBox(width: 6.w),
+                Icon(Icons.refresh, color: Colors.white54, size: 16.sp),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

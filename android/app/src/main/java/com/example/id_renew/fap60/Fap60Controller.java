@@ -123,16 +123,46 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
     }
 
     public synchronized boolean openDevice() {
-        if (mDeviceOpen) return true;
+        UsbDevice device = UsbPermissionHelper.findFap60Device(mContext);
+        if (device == null) {
+            mDeviceOpen = false;
+            Log.d(TAG, "openDevice: no FAP60 on USB bus");
+            return false;
+        }
+        if (!UsbPermissionHelper.hasPermission(mContext, device)) {
+            Log.d(TAG, "openDevice: USB permission not granted");
+            return false;
+        }
+        if (mDeviceOpen && mManager.CS_isDeviceOpen()) return true;
+
         int ret = mManager.CS_openDevice(mInitParam);
-        Log.i(TAG, "CS_openDevice ret=" + ret + " vid=" + mInitParam.vid + " pid=" + mInitParam.pid);
+        Log.i(TAG, "CS_openDevice ret=" + ret + " vid=" + device.getVendorId()
+                + " pid=" + device.getProductId());
         mDeviceOpen = (ret == Constants.ErrorStatus.CS_STATUS_OK);
         if (mDeviceOpen) notifyStatus(true);
         return mDeviceOpen;
     }
 
+    /**
+     * True only when a FAP60 is on the USB bus, permission is granted, and SDK session is open.
+     */
     public boolean isDeviceOpen() {
-        return mManager.CS_isDeviceOpen();
+        UsbDevice device = UsbPermissionHelper.findFap60Device(mContext);
+        if (device == null) {
+            mDeviceOpen = false;
+            return false;
+        }
+        if (!UsbPermissionHelper.hasPermission(mContext, device)) {
+            return false;
+        }
+        boolean sdkOpen = mManager.CS_isDeviceOpen();
+        mDeviceOpen = sdkOpen;
+        return sdkOpen;
+    }
+
+    /** USB device present (may still lack permission or open session). */
+    public boolean isScannerAttached() {
+        return UsbPermissionHelper.findFap60Device(mContext) != null;
     }
 
     public synchronized void cancelCapture() {
@@ -279,13 +309,19 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
 
     @Override
     public void onDetach(UsbDevice usbDevice) {
-        mDeviceOpen = false;
-        notifyStatus(false);
+        if (UsbPermissionHelper.isFap60Device(usbDevice)) {
+            mManager.CS_closeDevice();
+            mDeviceOpen = false;
+            notifyStatus(false);
+        }
     }
 
     @Override
     public void onCancel(UsbDevice usbDevice) {
-        mDeviceOpen = false;
-        notifyStatus(false);
+        if (UsbPermissionHelper.isFap60Device(usbDevice)) {
+            mManager.CS_closeDevice();
+            mDeviceOpen = false;
+            notifyStatus(false);
+        }
     }
 }

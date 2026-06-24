@@ -1,6 +1,7 @@
 package com.example.id_renew.fap60;
 
 import android.app.AlarmManager;
+import android.hardware.usb.UsbDevice;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -207,12 +208,23 @@ public class SocketServerService extends Service {
     }
 
     private JSONObject handleStatus(String id) throws Exception {
-        boolean open = Fap60Controller.getInstance(this).isDeviceOpen();
+        Fap60Controller ctrl = Fap60Controller.getInstance(this);
+        UsbDevice device = UsbPermissionHelper.findFap60Device(this);
+        boolean attached = device != null;
+        boolean permitted = attached
+                && UsbPermissionHelper.hasPermission(this, device);
+        boolean open = ctrl.isDeviceOpen();
+        if (attached && permitted && !open) {
+            open = ctrl.openDevice();
+        }
+
         JSONObject resp = new JSONObject();
         resp.put("id", id);
         resp.put("device", "FAP60");
         resp.put("method", "status");
         resp.put("status", "ok");
+        resp.put("deviceAttached", attached);
+        resp.put("devicePermitted", permitted);
         resp.put("deviceOpen", open);
         return resp;
     }

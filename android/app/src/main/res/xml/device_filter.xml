@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Match any FAP60 product from vendor 53013 (0xCF15) -->
+    <usb-device vendor-id="53013" />
     <usb-device vendor-id="53013" product-id="18029" />
     <usb-device vendor-id="53013" product-id="18017" />
     <usb-device vendor-id="53013" product-id="18018" />

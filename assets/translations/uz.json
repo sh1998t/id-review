@@ -52,8 +52,10 @@
       "special_case_count": "Barmoq izi topshirish jismoniy imkonsiz holatda ({} ta)",
       "capture": "Skanerlash",
       "waiting": "Barmoqlarni skanerga qo'ying...",
-      "scanner_not_connected": "FAP60 skaner ulanmagan",
-      "scanner_error": "FAP60 skanerga ulanib bo'lmadi"
+      "scanner_connected": "Barmoq izi skaneri ulangan",
+      "scanner_not_connected": "Barmoq izi skaneri ulanmagan",
+      "scanner_checking": "Skaner tekshirilmoqda...",
+      "scanner_error": "Skanerga ulanib bo'lmadi"
     },
     "signature": {
       "title": "Imzoni qo'ying",
