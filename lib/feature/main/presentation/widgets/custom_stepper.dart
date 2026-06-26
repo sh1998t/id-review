@@ -451,7 +451,6 @@ class _StepShapePainter extends CustomPainter {
     path.lineTo(0, size.height);
     path.lineTo(arrowWidth, size.height / 2);
     path.close();
-
     return path;
   }
 

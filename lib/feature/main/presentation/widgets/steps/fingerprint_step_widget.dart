@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/fap60/fap60_client.dart';
 import '../../../../../core/fap60/fap60_finger_mapping.dart';
+import '../../../../../core/fap60/fap60_platform.dart';
 import '../disabled_fingers_modal.dart';
 
 class FingerprintStepWidget extends StatefulWidget {
@@ -41,10 +42,10 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
       _scannerError = false;
     });
     try {
-      final open = await _client.isDeviceOpen();
+      final status = await Fap60Platform.connectScanner();
       if (!mounted) return;
       setState(() {
-        _deviceReady = open;
+        _deviceReady = status.isReady;
         _checkingDevice = false;
         _scannerError = false;
       });
@@ -68,13 +69,40 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
     setState(() => _disabledFingers = result);
   }
 
+  List<int> _activeFingers(List<int> fingerNumbers) {
+    return fingerNumbers
+        .where((finger) => !_disabledFingers.contains(finger))
+        .toList();
+  }
+
+  bool _isGroupComplete(List<int> fingerNumbers) {
+    final active = _activeFingers(fingerNumbers);
+    return active.isNotEmpty &&
+        active.every((finger) => _captured.containsKey(finger));
+  }
+
+  void _clearGroupCaptures(List<int> fingerNumbers) {
+    for (final finger in _activeFingers(fingerNumbers)) {
+      _captured.remove(finger);
+    }
+  }
+
   Future<void> _captureGroup(int imageType, List<int> fingerNumbers) async {
     if (_capturingGroup != null) return;
     if (Fap60FingerMapping.isGroupFullyDisabled(_disabledFingers, fingerNumbers)) {
       return;
     }
 
+    if (imageType == 3) {
+      await _captureThumbGroup(fingerNumbers);
+      return;
+    }
+
+    final active = _activeFingers(fingerNumbers);
+    if (active.isEmpty) return;
+
     setState(() {
+      _clearGroupCaptures(fingerNumbers);
       _capturingGroup = imageType;
       _captureMessage = 'main.fingerprint.waiting'.tr();
     });
@@ -118,6 +146,72 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
     }
   }
 
+  Future<void> _captureThumbGroup(List<int> fingerNumbers) async {
+    final active = _activeFingers(fingerNumbers);
+    if (active.isEmpty) return;
+
+    var toCapture =
+        active.where((finger) => !_captured.containsKey(finger)).toList();
+    if (toCapture.isEmpty) {
+      _clearGroupCaptures(fingerNumbers);
+      toCapture = active;
+    }
+
+    setState(() => _capturingGroup = 3);
+
+    try {
+      for (final finger in toCapture) {
+        final waitingKey = finger == 6
+            ? 'main.fingerprint.thumb_right_waiting'
+            : 'main.fingerprint.thumb_left_waiting';
+        setState(() => _captureMessage = waitingKey.tr());
+
+        final result = await _client.capture(imageType: 2);
+        if (!mounted) return;
+
+        if (!result.success) {
+          setState(() {
+            _capturingGroup = null;
+            _captureMessage = result.error;
+          });
+          return;
+        }
+
+        Uint8List? bytes;
+        if (result.fingerImages.isNotEmpty) {
+          bytes = result.fingerImages.first;
+        }
+
+        if (bytes == null) {
+          setState(() {
+            _capturingGroup = null;
+            _captureMessage = 'main.fingerprint.thumb_no_data'.tr();
+          });
+          return;
+        }
+
+        final quality =
+            result.quality.isNotEmpty ? result.quality.first : 0;
+
+        setState(() {
+          _captured[finger] = _CapturedFinger(bytes: bytes!, quality: quality);
+        });
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _capturingGroup = null;
+        _captureMessage = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _capturingGroup = null;
+        _captureMessage = e.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -141,6 +235,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
           disabledFingers: _disabledFingers,
           captured: _captured,
           isCapturing: _capturingGroup == 0,
+          isComplete: _isGroupComplete(_leftGroup),
           onCapture: _deviceReady && _capturingGroup == null
               ? () => _captureGroup(0, _leftGroup)
               : null,
@@ -152,6 +247,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
           disabledFingers: _disabledFingers,
           captured: _captured,
           isCapturing: _capturingGroup == 1,
+          isComplete: _isGroupComplete(_rightGroup),
           onCapture: _deviceReady && _capturingGroup == null
               ? () => _captureGroup(1, _rightGroup)
               : null,
@@ -163,6 +259,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
           disabledFingers: _disabledFingers,
           captured: _captured,
           isCapturing: _capturingGroup == 3,
+          isComplete: _isGroupComplete(_thumbGroup),
           onCapture: _deviceReady && _capturingGroup == null
               ? () => _captureGroup(3, _thumbGroup)
               : null,
@@ -197,6 +294,7 @@ class _FingerGroup extends StatelessWidget {
   final Set<int> disabledFingers;
   final Map<int, _CapturedFinger> captured;
   final bool isCapturing;
+  final bool isComplete;
   final VoidCallback? onCapture;
 
   const _FingerGroup({
@@ -205,6 +303,7 @@ class _FingerGroup extends StatelessWidget {
     required this.disabledFingers,
     required this.captured,
     required this.isCapturing,
+    required this.isComplete,
     this.onCapture,
   });
 
@@ -271,7 +370,9 @@ class _FingerGroup extends StatelessWidget {
                             ),
                           )
                         : Text(
-                            'main.fingerprint.capture'.tr(),
+                            isComplete
+                                ? 'main.fingerprint.recapture'.tr()
+                                : 'main.fingerprint.capture'.tr(),
                             style: TextStyle(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w600,

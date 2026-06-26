@@ -226,6 +226,11 @@ public class SocketServerService extends Service {
         resp.put("deviceAttached", attached);
         resp.put("devicePermitted", permitted);
         resp.put("deviceOpen", open);
+        resp.put("openRetCode", ctrl.getLastOpenRet());
+        if (device != null) {
+            resp.put("vid", device.getVendorId());
+            resp.put("pid", device.getProductId());
+        }
         return resp;
     }
 

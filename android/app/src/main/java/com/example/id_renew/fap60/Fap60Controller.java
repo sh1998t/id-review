@@ -41,6 +41,7 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
     private final CSFapManager mManager;
     private final FapInitParam mInitParam;
     private volatile boolean mDeviceOpen = false;
+    private volatile int mLastOpenRet = -1;
 
     private final CopyOnWriteArrayList<StatusListener> mListeners = new CopyOnWriteArrayList<>();
 
@@ -135,12 +136,20 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
         }
         if (mDeviceOpen && mManager.CS_isDeviceOpen()) return true;
 
+        mInitParam.vid = device.getVendorId();
+        mInitParam.pid = device.getProductId();
+
         int ret = mManager.CS_openDevice(mInitParam);
-        Log.i(TAG, "CS_openDevice ret=" + ret + " vid=" + device.getVendorId()
-                + " pid=" + device.getProductId());
+        mLastOpenRet = ret;
+        Log.i(TAG, "CS_openDevice ret=" + ret + " vid=" + mInitParam.vid
+                + " pid=" + mInitParam.pid);
         mDeviceOpen = (ret == Constants.ErrorStatus.CS_STATUS_OK);
         if (mDeviceOpen) notifyStatus(true);
         return mDeviceOpen;
+    }
+
+    public int getLastOpenRet() {
+        return mLastOpenRet;
     }
 
     /**
@@ -169,22 +178,50 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
         mManager.CS_cancelCaptureImage();
     }
 
+    private boolean ensureDeviceOpen() {
+        if (mManager.CS_isDeviceOpen()) {
+            mDeviceOpen = true;
+            return true;
+        }
+        mDeviceOpen = false;
+        return openDevice();
+    }
+
+    /** Close and reopen only when the SDK reports a broken session. */
+    private boolean recoverDeviceSession() {
+        cancelCapture();
+        mManager.CS_closeDevice();
+        mDeviceOpen = false;
+        return openDevice();
+    }
+
     public static final int IMAGE_TYPE_TWO_THUMBS = 3;
 
     public synchronized CaptureResult capture(int imageType) {
-        if (!isDeviceOpen()) {
-            if (!openDevice()) return new CaptureResult("Device not open");
+        cancelCapture();
+
+        if (!ensureDeviceOpen()) {
+            return new CaptureResult("Device not open: ret=" + mLastOpenRet);
         }
 
         if (imageType == IMAGE_TYPE_TWO_THUMBS) {
             return captureTwoThumbs();
         }
 
-        boolean isRoll = (imageType == Constants.ScanImageType.ImageTypeRoll);
-        int sdkType = isRoll ? Constants.ScanImageType.ImageTypeRoll
-                : Constants.ScanImageType.ImageTypeRFour;
+        final int sdkType;
+        if (imageType == 0) {
+            sdkType = Constants.ScanImageType.ImageTypeLFour;
+        } else if (imageType == 1) {
+            sdkType = Constants.ScanImageType.ImageTypeRFour;
+        } else if (imageType == Constants.ScanImageType.ImageTypeRoll) {
+            sdkType = Constants.ScanImageType.ImageTypeRoll;
+        } else {
+            sdkType = Constants.ScanImageType.ImageTypeRFour;
+        }
 
-        FapCaptureParam param = mManager.CS_captureImage(sdkType, 0, 0, 1, this);
+        final boolean isRoll = sdkType == Constants.ScanImageType.ImageTypeRoll;
+
+        FapCaptureParam param = captureImageWithRecovery(sdkType);
 
         if (param == null) return new CaptureResult("Capture returned null");
 
@@ -225,7 +262,11 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
         int[] quality = new int[fingerCount];
         String[] fingerImages = new String[fingerCount];
 
-        if (!isRoll && fingerCount > 0
+        if (isRoll && fingerCount > 0) {
+            fingerImages[0] = fullB64;
+            quality[0] = (param.imgPos != null && param.imgPos.length > 0)
+                    ? param.imgPos[0].score : 0;
+        } else if (!isRoll && fingerCount > 0
                 && param.smallImageData != null && param.imgPos != null) {
             int fw = param.imgPos[0].w;
             int fh = param.imgPos[0].h;
@@ -252,7 +293,21 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
         return new CaptureResult(fullB64, w, h, fingerCount, quality, fingerImages, isLeftHand);
     }
 
+    private FapCaptureParam captureImageWithRecovery(int sdkType) {
+        FapCaptureParam param = mManager.CS_captureImage(sdkType, 0, 0, 1, this);
+        if (param != null
+                && param.errCode == Constants.ErrorStatus.CS_ERR_OPEN_DEVICE
+                && recoverDeviceSession()) {
+            param = mManager.CS_captureImage(sdkType, 0, 0, 1, this);
+        }
+        return param;
+    }
+
     private CaptureResult captureTwoThumbs() {
+        if (!ensureDeviceOpen()) {
+            return new CaptureResult("Thumb session open failed: ret=" + mLastOpenRet);
+        }
+
         String[] images = new String[2];
         int[] quality = new int[2];
         String[] labels = {"Right thumb", "Left thumb"};
@@ -261,19 +316,33 @@ public class Fap60Controller implements onCaptureImageListener, onDeviceChangeLi
             final int idx = i;
             if (mThumbListener != null) mThumbListener.onThumbCaptured(idx, labels[idx]);
 
-            FapCaptureParam param = mManager.CS_captureImage(
-                    Constants.ScanImageType.ImageTypeRoll, 0, 0, 1, this);
+            cancelCapture();
+            if (!ensureDeviceOpen()) {
+                return new CaptureResult("Error step " + (idx + 1)
+                        + ": openDevice ret=" + mLastOpenRet);
+            }
+
+            FapCaptureParam param = captureImageWithRecovery(
+                    Constants.ScanImageType.ImageTypeRoll);
             if (param == null) {
                 return new CaptureResult("Cancelled at step " + (idx + 1));
             }
 
+            boolean cancelled = param.errCode == Constants.ErrorStatus.CS_ERR_CANCEL_CAPTURE_IMAGE
+                    || param.errCode == Constants.ErrorStatus.CS_ERR_CAPTURE_IMAGE_TIMEOUT;
+            if (cancelled) {
+                return new CaptureResult("Capture error code: " + param.errCode);
+            }
+
+            boolean hasData = param.oriImageData != null && param.oriImageData.length > 0;
             boolean ok = param.errCode == Constants.ErrorStatus.CS_STATUS_OK
                     || param.errCode == Constants.ErrorStatus.CS_GZ_IMAGE_MERGING
-                    || param.errCode == Constants.ErrorStatus.CS_GZ_IMAGE_MERGE_FINISH;
+                    || param.errCode == Constants.ErrorStatus.CS_GZ_IMAGE_MERGE_FINISH
+                    || hasData;
             if (!ok) {
                 return new CaptureResult("Error step " + (idx + 1) + ": errCode=" + param.errCode);
             }
-            if (param.oriImageData == null || param.oriImageData.length == 0) {
+            if (!hasData) {
                 return new CaptureResult("No data at step " + (idx + 1));
             }
 
