@@ -7,10 +7,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/fap60/fap60_client.dart';
 import '../../../../../core/fap60/fap60_finger_mapping.dart';
 import '../../../../../core/fap60/fap60_platform.dart';
+import '../../../domain/entities/fingerprint_print.dart';
 import '../disabled_fingers_modal.dart';
 
+typedef FingerprintsChangedCallback = void Function(
+  Map<int, FingerprintPrint> fingerprints,
+  Set<int> disabledFingers,
+);
+
 class FingerprintStepWidget extends StatefulWidget {
-  const FingerprintStepWidget({super.key});
+  final FingerprintsChangedCallback? onFingerprintsChanged;
+
+  const FingerprintStepWidget({
+    super.key,
+    this.onFingerprintsChanged,
+  });
 
   @override
   State<FingerprintStepWidget> createState() => _FingerprintStepWidgetState();
@@ -67,6 +78,23 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
 
     if (!mounted || result == null) return;
     setState(() => _disabledFingers = result);
+    _notifyFingerprintsChanged();
+  }
+
+  void _notifyFingerprintsChanged() {
+    widget.onFingerprintsChanged?.call(
+      _captured.map(
+        (finger, value) => MapEntry(
+          finger,
+          FingerprintPrint(
+            fingerNumber: finger,
+            quality: value.quality,
+            bytes: value.bytes,
+          ),
+        ),
+      ),
+      Set<int>.from(_disabledFingers),
+    );
   }
 
   List<int> _activeFingers(List<int> fingerNumbers) {
@@ -137,6 +165,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
         _capturingGroup = null;
         _captureMessage = null;
       });
+      _notifyFingerprintsChanged();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -203,6 +232,7 @@ class _FingerprintStepWidgetState extends State<FingerprintStepWidget> {
         _capturingGroup = null;
         _captureMessage = null;
       });
+      _notifyFingerprintsChanged();
     } catch (e) {
       if (!mounted) return;
       setState(() {

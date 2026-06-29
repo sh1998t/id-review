@@ -6,7 +6,14 @@ import 'package:id_renew/core/services/text_format.dart';
 import 'package:id_renew/feature/widgets/main_text_field.dart';
 
 class ReviewStepWidget extends StatelessWidget {
-  const ReviewStepWidget({super.key});
+  final TextEditingController phoneController;
+  final void Function(String phone)? onChanged;
+
+  const ReviewStepWidget({
+    super.key,
+    required this.phoneController,
+    this.onChanged,
+  });
 
   static const _idCardFront = 'assets/image/passport.png';
   static const _idCardBack = 'assets/image/passport2.png';
@@ -17,10 +24,12 @@ class ReviewStepWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         MainTextField(
+          controller: phoneController,
           title: 'main.review.phone_title'.tr(),
           hintText: 'main.review.phone_hint'.tr(),
           keyboardType: TextInputType.phone,
           inputFormatters: [AppInputMasks.phone],
+          onchange: (value) => onChanged?.call(value?.toString() ?? ''),
         ),
         SizedBox(height: 20.h),
         Text(

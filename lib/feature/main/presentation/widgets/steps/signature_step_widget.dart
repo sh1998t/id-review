@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,10 +9,10 @@ class SignatureStepWidget extends StatefulWidget {
   const SignatureStepWidget({super.key});
 
   @override
-  State<SignatureStepWidget> createState() => _SignatureStepWidgetState();
+  SignatureStepWidgetState createState() => SignatureStepWidgetState();
 }
 
-class _SignatureStepWidgetState extends State<SignatureStepWidget> {
+class SignatureStepWidgetState extends State<SignatureStepWidget> {
   late final SignatureController _controller;
 
   @override
@@ -21,6 +23,11 @@ class _SignatureStepWidgetState extends State<SignatureStepWidget> {
       penColor: Colors.black,
       exportBackgroundColor: Colors.white,
     );
+  }
+
+  Future<Uint8List?> exportSignatureBytes() async {
+    if (_controller.isEmpty) return null;
+    return _controller.toPngBytes();
   }
 
   @override

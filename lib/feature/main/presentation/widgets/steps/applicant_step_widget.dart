@@ -5,7 +5,23 @@ import 'package:id_renew/core/services/text_format.dart';
 import 'package:id_renew/feature/widgets/main_text_field.dart';
 
 class ApplicantStepWidget extends StatelessWidget {
-  const ApplicantStepWidget({super.key});
+  final TextEditingController pinflController;
+  final TextEditingController passportController;
+  final void Function(String pinfl, String passport)? onChanged;
+
+  const ApplicantStepWidget({
+    super.key,
+    required this.pinflController,
+    required this.passportController,
+    this.onChanged,
+  });
+
+  void _notifyChange() {
+    onChanged?.call(
+      pinflController.text,
+      passportController.text,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,35 +29,20 @@ class ApplicantStepWidget extends StatelessWidget {
       spacing: 10.h,
       children: [
         MainTextField(
-          title: 'main.applicant.first_name'.tr(),
-          hintText: 'main.applicant.first_name_hint'.tr(),
-        ),
-        MainTextField(
-          title: 'main.applicant.last_name'.tr(),
-          hintText: 'main.applicant.last_name_hint'.tr(),
-        ),
-        MainTextField(
-          keyboardType: TextInputType.text,
-          title: 'main.applicant.middle_name'.tr(),
-          hintText: 'main.applicant.middle_name_hint'.tr(),
-        ),
-        MainTextField(
+          controller: pinflController,
           title: 'main.applicant.pinfl'.tr(),
           hintText: 'main.applicant.pinfl_hint'.tr(),
           keyboardType: TextInputType.number,
           inputFormatters: [AppInputMasks.pinfl],
+          onchange: (_) => _notifyChange(),
         ),
         MainTextField(
+          controller: passportController,
           title: 'main.applicant.passport'.tr(),
           hintText: 'main.applicant.passport_hint'.tr(),
           textCapitalization: TextCapitalization.characters,
           inputFormatters: [AppInputMasks.passport],
-        ),
-        MainTextField(
-          title: 'main.applicant.birth_date'.tr(),
-          hintText: 'main.applicant.birth_date_hint'.tr(),
-          keyboardType: TextInputType.number,
-          inputFormatters: [AppInputMasks.birthDate],
+          onchange: (_) => _notifyChange(),
         ),
       ],
     );

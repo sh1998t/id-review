@@ -11,27 +11,29 @@ class GlassContainer extends StatelessWidget {
   final String title;
   final String icon;
   final String icon2;
+  final String serviceType;
   final double? widthIIcon;
   final double? heightIcon;
   const GlassContainer({
     super.key,
     required this.width,
     required this.height,
-     this.widthIIcon,
-     this.heightIcon,
+    this.widthIIcon,
+    this.heightIcon,
     required this.title,
     required this.icon,
     required this.icon2,
+    this.serviceType = 'id_renewal',
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MainPage(),
+            builder: (context) => MainPage(serviceType: serviceType),
           ),
         );
       },

@@ -1,15 +1,18 @@
 {
   "auth": {
+    "title": "Tizimga kirish",
+    "notice": "Eslatma: Ushbu tizimdan faqat maxsus xodim foydalanishi mumkin, login va parolni begona shaxsga berish javobgarlikka sabab bo'lishi mumkin!",
     "greeting": "Assalomu Aleykum",
     "login": "Login",
-    "login_hint": "Login",
+    "login_hint": "Loginni kiriting",
     "password": "Parol",
-    "password_hint": "Parol",
+    "password_hint": "Parolni kiriting",
     "sign_in": "Kirish",
     "login_required": "Loginni kiriting",
     "login_min_length": "Login kamida 3 ta belgidan iborat bo'lishi kerak",
     "password_required": "Parolni kiriting",
-    "password_min_length": "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
+    "password_min_length": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+    "login_failed": "Kirish amalga oshmadi"
   },
   "main": {
     "org_title": "Migratsiya va fuqarolikni rasmiylashtirish boshqarmasi",
@@ -33,15 +36,18 @@
       "middle_name": "Otasini ismi",
       "middle_name_hint": "Otasini ismi",
       "pinfl": "JShShIR",
-      "pinfl_hint": "JShShIR",
+      "pinfl_hint": "00000000000000",
       "passport": "Seriya va raqami",
-      "passport_hint": "Seriya va raqami",
+      "passport_hint": "AA 0000000",
       "birth_date": "Tug'ilgan sanasi",
       "birth_date_hint": "Tug'ilgan sanasi"
     },
     "face_id": {
       "camera_not_found": "Kamera topilmadi",
-      "camera_error": "Kamerani ochib bo'lmadi"
+      "camera_error": "Kamerani ochib bo'lmadi",
+      "capture": "Rasmga tushish",
+      "retake": "Qayta olish",
+      "captured": "Rasm olindi"
     },
     "fingerprint": {
       "left_hand": "Chap qo'l barmoq izlari",
@@ -70,6 +76,10 @@
       "phone_hint": "+998 00 000 00 00",
       "id_card_copy": "ID kartaning elektron nusxasi",
       "id_card_image": "ID karta rasmi"
+    },
+    "common": {
+      "error": "Xatolik yuz berdi",
+      "submit_success": "Ariza muvaffaqiyatli yuborildi"
     },
     "disabled_fingers": {
       "title": "Barmoq izi olish imkonsiz bo'lgan barmoqlaringizni belgilang",

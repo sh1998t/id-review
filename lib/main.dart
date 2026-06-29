@@ -1,12 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'feature/auth/presentation/page/auth_page.dart';
+import 'core/di/injection.dart';
+import 'feature/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'feature/auth/presentation/pages/auth_page.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await initDi();
 
   runApp(
     EasyLocalization(
@@ -44,7 +48,10 @@ class MyApp extends StatelessWidget {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) => child ?? const SizedBox.shrink(),
-        child: const AuthPage(),
+        child: BlocProvider(
+          create: (_) => inject<AuthBloc>(),
+          child: const AuthPage(),
+        ),
       ),
     );
   }

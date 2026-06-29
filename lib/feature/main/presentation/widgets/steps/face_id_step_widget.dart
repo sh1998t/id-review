@@ -6,7 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 enum _CameraError { notFound, openFailed }
 
 class FaceIdStepWidget extends StatefulWidget {
-  const FaceIdStepWidget({super.key});
+  final void Function(List<int> photoBytes)? onPhotoCaptured;
+
+  const FaceIdStepWidget({
+    super.key,
+    this.onPhotoCaptured,
+  });
 
   @override
   State<FaceIdStepWidget> createState() => _FaceIdStepWidgetState();
@@ -15,6 +20,8 @@ class FaceIdStepWidget extends StatefulWidget {
 class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
   CameraController? _controller;
   bool _isInitialized = false;
+  bool _isCapturing = false;
+  bool _hasPhoto = false;
   _CameraError? _error;
 
   @override
@@ -53,9 +60,33 @@ class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
         _controller = controller;
         _isInitialized = true;
       });
-    } catch (error) {
+    } catch (_) {
       if (!mounted) return;
       setState(() => _error = _CameraError.openFailed);
+    }
+  }
+
+  Future<void> _capturePhoto() async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized || _isCapturing) {
+      return;
+    }
+
+    setState(() => _isCapturing = true);
+
+    try {
+      final photo = await controller.takePicture();
+      final bytes = await photo.readAsBytes();
+      if (!mounted) return;
+
+      widget.onPhotoCaptured?.call(bytes);
+      setState(() {
+        _hasPhoto = true;
+        _isCapturing = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isCapturing = false);
     }
   }
 
@@ -82,7 +113,41 @@ class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
           color: const Color(0xFF2F3448),
           borderRadius: BorderRadius.circular(12.r),
         ),
-        child: Center(child: _buildCameraArea()),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(child: Center(child: _buildCameraArea())),
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: ElevatedButton(
+                onPressed: _isInitialized && !_isCapturing ? _capturePhoto : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF28C711),
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: const Color(0xFF28C711).withValues(alpha: 0.5),
+                ),
+                child: _isCapturing
+                    ? SizedBox(
+                        width: 18.w,
+                        height: 18.w,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        _hasPhoto
+                            ? 'main.face_id.retake'.tr()
+                            : 'main.face_id.capture'.tr(),
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -100,19 +165,43 @@ class _FaceIdStepWidgetState extends State<FaceIdStepWidget> {
       return const CircularProgressIndicator(color: Colors.white);
     }
 
-    return ClipOval(
-      child: SizedBox(
-        width: 280.w,
-        height: 280.w,
-        child: FittedBox(
-          fit: BoxFit.cover,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ClipOval(
           child: SizedBox(
-            width: _controller!.value.previewSize?.height ?? 280.w,
-            height: _controller!.value.previewSize?.width ?? 280.w,
-            child: CameraPreview(_controller!),
+            width: 280.w,
+            height: 280.w,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _controller!.value.previewSize?.height ?? 280.w,
+                height: _controller!.value.previewSize?.width ?? 280.w,
+                child: CameraPreview(_controller!),
+              ),
+            ),
           ),
         ),
-      ),
+        if (_hasPhoto)
+          Positioned(
+            bottom: 8.h,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+              decoration: BoxDecoration(
+                color: const Color(0xFF28C711),
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Text(
+                'main.face_id.captured'.tr(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

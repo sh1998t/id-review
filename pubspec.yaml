@@ -45,6 +45,18 @@ dependencies:
   camera: ^0.12.0+1
   flip_card: ^0.7.0
   easy_localization: ^3.0.7
+  flutter_bloc: ^9.1.1
+  bloc: ^9.0.1
+  equatable: ^2.0.7
+  get_it: ^8.0.3
+  injectable: ^2.5.0
+  dio: ^5.8.0+1
+  retrofit: ^4.7.2
+  json_annotation: ^4.9.0
+  fpdart: ^1.1.0
+  freezed_annotation: ^3.0.0
+  flutter_secure_storage: ^9.2.4
+  pretty_dio_logger: ^1.4.0
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +68,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  build_runner: ^2.4.13
+  injectable_generator: ^2.6.2
+  json_serializable: ^6.8.0
+  retrofit_generator: ^10.2.7
+  freezed: ^3.2.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
