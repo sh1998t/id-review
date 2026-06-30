@@ -4,8 +4,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:id_renew/core/di/injection.dart';
 import 'package:id_renew/core/errors/failures.dart';
+import 'package:id_renew/core/router/routes_name.dart';
 import 'package:id_renew/feature/main/presentation/bloc/id_renewal/id_renewal_bloc.dart';
 import 'package:id_renew/feature/widgets/bacround_widget.dart';
 
@@ -140,7 +142,7 @@ class _MainPageState extends State<MainPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('main.common.submit_success'.tr())),
             );
-            Navigator.of(context).pop();
+            context.go(RoutesName.servicesPath);
             return;
           }
 

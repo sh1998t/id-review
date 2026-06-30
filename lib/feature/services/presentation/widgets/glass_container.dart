@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-
-import '../../../main/presentation/page/main_page.dart';
+import 'package:go_router/go_router.dart';
+import 'package:id_renew/core/router/routes_name.dart';
 
 class GlassContainer extends StatelessWidget {
   final double width;
@@ -29,14 +29,7 @@ class GlassContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MainPage(serviceType: serviceType),
-          ),
-        );
-      },
+      onTap: () => context.push(RoutesName.renewal(serviceType)),
       child: GlassmorphicContainer(
         width: width,
         height: height,

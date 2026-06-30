@@ -68,6 +68,7 @@ class ServicesPage extends StatelessWidget {
                     title: 'services.biometric_passport'.tr(),
                     icon: 'gerb_icon.svg',
                     icon2: 'icon_person.svg',
+                    serviceType: 'biometric_passport',
                   ),
                   GlassContainer(
                     height: 130.h,
@@ -75,6 +76,7 @@ class ServicesPage extends StatelessWidget {
                     title: 'services.id_renewal'.tr(),
                     icon: 'watch.svg',
                     icon2: 'icon_person.svg',
+                    serviceType: 'id_renewal',
                   ),
                 ],
               ),
@@ -90,6 +92,7 @@ class ServicesPage extends StatelessWidget {
                     title: 'services.non_citizen_replacement'.tr(),
                     icon: 'document.svg',
                     icon2: 'icon_person.svg',
+                    serviceType: 'non_citizen_replacement',
                   ),
                   GlassContainer(
                     height: 130.h,
@@ -97,6 +100,7 @@ class ServicesPage extends StatelessWidget {
                     title: 'services.non_citizen_replacement'.tr(),
                     icon: 'watch.svg',
                     icon2: 'watch.svg',
+                    serviceType: 'non_citizen_replacement',
                   ),
                 ],
               ),

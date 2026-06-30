@@ -4,9 +4,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:id_renew/core/errors/failures.dart';
+import 'package:id_renew/core/router/routes_name.dart';
 import 'package:id_renew/feature/main/presentation/widgets/language_dropdown.dart';
-import 'package:id_renew/feature/services/presentation/page/services_page.dart';
 import 'package:id_renew/feature/widgets/bacround_widget.dart';
 import 'package:id_renew/feature/widgets/main_text_field.dart';
 
@@ -84,10 +85,7 @@ class _AuthPageState extends State<AuthPage> {
           previous.isLoggedIn != current.isLoggedIn,
       listener: (context, state) {
         if (state.isLoggedIn) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const ServicesPage()),
-          );
+          context.go(RoutesName.servicesPath);
         }
       },
       child: Scaffold(
